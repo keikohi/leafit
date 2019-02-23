@@ -1,3 +1,5 @@
+const pkg = require('./package')
+const bodyParser = require('body-parser')
 module.exports = {
   /*
   ** Headers of the page
@@ -12,10 +14,17 @@ module.exports = {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
-    ]
+    ],
+
   },
-  plugins: ['~/plugins/vuetify.js'],
-  css: ['~/assets/style/app.styl'],
+  plugins: [
+    '~/plugins/vuetify.js',
+    { src: '~plugins/mavon-editor', ssr: false }
+  ],
+  css: [
+     '~/assets/style/app.styl',
+     { src: '~/node_modules/highlight.js/styles/railscasts.css', lang: 'css' }
+  ],
   /*
   ** Customize the progress bar color
   */
@@ -25,7 +34,7 @@ module.exports = {
   */
   build: {
     extractCSS: true,
-    extend (config, ctx) {
+    extend(config, ctx) {
       // Run ESLint on save
       // if (ctx.isDev && ctx.isClient) {
       //   config.module.rules.push({
@@ -36,5 +45,17 @@ module.exports = {
       //   })
       // }
     }
-  }
+  },
+  modules: [
+    '@nuxtjs/axios',
+    'bootstrap-vue/nuxt',
+  ],
+  axios: {
+    baseURL: process.env.BASE_URL || 'https://leaf-it.firebaseio.com',
+    credentials: false
+  },
+  env: {
+    baseUrl: process.env.BASE_URL || 'https://leaf-it.firebaseio.com',
+    fbAPIKey: 'AIzaSyDOsnIWgXthFdwNBmjJBY2zzblwY7iJupc'
+  },
 }

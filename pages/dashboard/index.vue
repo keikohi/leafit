@@ -3,7 +3,6 @@
     <h1 class="subheading grey--text">keisuke</h1>
       <v-container class="my-5">
         
-        
         <v-layout row class="mb-3">
           <v-tooltip top>
             <v-btn small flat color="grey" @click="sortBy('title')" slot="activator" >

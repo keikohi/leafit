@@ -1,7 +1,10 @@
 <template>
-  <nav>
+  <v-app >
     <Navbar/>
-  </nav>
+    <v-content class="mx-4">
+      <nuxt/>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
