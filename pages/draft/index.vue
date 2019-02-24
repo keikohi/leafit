@@ -25,13 +25,14 @@
           </v-form>
         </v-card-text>
       </v-card>
-
-      
-        <v-chip close @input="remove(item)">
-          <strong>{{ chips[1] }}</strong>&nbsp;
-          <span>(interest)</span>
-        </v-chip>
-      
+      <md-chips
+        color="black"
+        class="md-primary shake-on-error"
+        v-model="post.tags"
+        md-placeholder="Add genre..."
+      >
+        <div class="md-helper-text">Type a tag and press enter...</div>
+      </md-chips>
 
       <v-btn @click="postDraft" absolute dark fab bottom right class="mb-5 green">
         <v-icon>done</v-icon>
@@ -56,7 +57,7 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <div class="compiledtext" v-html="compiledMarkdown"></div>
+    <v-text-field class="compiledtext" v-model="compiledMarkdown"></v-text-field>
   </div>
 </template>
 
@@ -76,18 +77,11 @@ export default {
     return {
       post: {
         title: "",
-        tags: "",
+        tags: ["Pop", "Rock", "Jazz", "Metal"],
         due: null,
         markdownText: "# kkeisuke"
       },
-      isShowProperty: true,
-      chips: [
-        "Programming",
-        "Playing video games",
-        "Watching movies",
-        "Sleeping"
-      ],
-      items: ["Streaming", "Eating"]
+      isShowProperty: true
     };
   },
   methods: {
@@ -105,7 +99,7 @@ export default {
       this.chips = [...this.chips];
     }
   },
-  created: function() {
+  created() {
     marked.setOptions({
       langPrefix: "",
       highlight: function(code, lang) {
@@ -139,5 +133,53 @@ code {
   background: #232323;
   width: 100%;
   padding: 20px 10px;
+  color: #e5e1dc;
 }
 </style>
+
+
+<style lang="scss" scoped>
+.shake-on-error /deep/ .md-duplicated {
+  animation-name: shake;
+  animation-duration: 0.5s;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(15px);
+  }
+  20% {
+    transform: translate(-15px);
+  }
+  40% {
+    transform: translate(7px);
+  }
+  60% {
+    transform: translate(-7px);
+  }
+  80% {
+    transform: translate(3px);
+  }
+  100% {
+    transform: translate(0px);
+  }
+}
+</style>
+
+<style lang="css" scoped>
+.pulse-on-error >>> .md-duplicated {
+  animation-name: pulse;
+  animation-duration: 0.5s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    transform: scale(0.9, 0.9);
+  }
+}

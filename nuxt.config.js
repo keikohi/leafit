@@ -19,6 +19,7 @@ module.exports = {
   },
   plugins: [
     '~/plugins/vuetify.js',
+    '~/plugins/vue-material.js',
     { src: '~plugins/mavon-editor', ssr: false }
   ],
   css: [
