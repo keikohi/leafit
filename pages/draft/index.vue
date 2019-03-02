@@ -12,52 +12,67 @@
           <v-form class="px-3 my-1" ref="form">
             <v-text-field class="py-0" label="title" v-model="post.title" prepend-icon="folder"></v-text-field>
             <v-text-field class="py-0" label="tag" v-model="post.tags" prepend-icon="tag"></v-text-field>
-            <v-menu>
-              <v-text-field
-                class="py-0"
-                :value="formattedDate"
-                slot="activator"
-                label="Due date"
-                prepend-icon="date_range"
-              ></v-text-field>
-              <v-date-picker v-model="post.due"></v-date-picker>
-            </v-menu>
+            <!-- <div id="container">
+              <v-icon id="tag_icon">tag</v-icon>
+              <md-chips id="tag_field" class="md-primary shake-on-error" v-model="post.tags">
+                <label>tag</label>
+              </md-chips>
+            </div>-->
+            <v-layout row>
+              <v-flex xs12 sm6>
+                <v-menu>
+                  <v-text-field
+                    class="py-0"
+                    :value="formattedDate"
+                    slot="activator"
+                    label="Due date"
+                    prepend-icon="date_range"
+                  ></v-text-field>
+                  <v-date-picker v-model="post.due"></v-date-picker>
+                </v-menu>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-select :items="statuses" v-model="post.status" label="Status"></v-select>
+              </v-flex>
+            </v-layout>
+            <v-btn
+              flat
+              fav
+              outline
+              small
+              color="indigo"
+              @click="showMarkdownEditor = !showMarkdownEditor"
+            >
+              <v-icon>edit</v-icon>
+            </v-btn>
           </v-form>
         </v-card-text>
+        <v-btn @click="postDraft" small absolute dark fab bottom right class="green">
+          <v-icon>done</v-icon>
+        </v-btn>
       </v-card>
-      <md-chips
-        color="black"
-        class="md-primary shake-on-error"
-        v-model="post.tags"
-        md-placeholder="Add genre..."
-      >
-        <div class="md-helper-text">Type a tag and press enter...</div>
-      </md-chips>
-
-      <v-btn @click="postDraft" absolute dark fab bottom right class="mb-5 green">
-        <v-icon>done</v-icon>
-      </v-btn>
     </v-container>
-    <v-layout row>
-      <v-flex xs6 height="300px">
-        <!-- <v-card height="300px" flat>
-          <v-textarea v-model="post.markdownText"></v-textarea>
-        </v-card>-->
-        <v-textarea
-          box
-          label="MarkDown Text"
-          class="textArea"
-          no-resize
-          v-model="post.markdownText"
-        ></v-textarea>
-      </v-flex>
-      <v-flex xs6>
-        <v-card height="324px" flat>
-          <v-card-text class="compiledtext" v-html="compiledMarkdown"></v-card-text>
-        </v-card>
-      </v-flex>
-    </v-layout>
-    <v-text-field class="compiledtext" v-model="compiledMarkdown"></v-text-field>
+
+    <transition name="editor">
+      <v-layout row v-if="showMarkdownEditor">
+        <v-flex xs6 height="300px">
+          <v-textarea
+            box
+            label="MarkDown Text"
+            class="textArea"
+            no-resize
+            v-model="post.markdownText"
+          ></v-textarea>
+        </v-flex>
+        <v-flex xs6>
+          <v-card height="324px" flat>
+            <v-card-text class="compiledtext" v-html="compiledMarkdown"></v-card-text>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </transition>
+
+    <!-- <v-text-field class="compiledtext" v-model="compiledMarkdown"></v-text-field> -->
   </div>
 </template>
 
@@ -77,11 +92,14 @@ export default {
     return {
       post: {
         title: "",
-        tags: ["Pop", "Rock", "Jazz", "Metal"],
-        due: null,
+        tags: [],
+        status: "",
+        due: "",
         markdownText: "# kkeisuke"
       },
-      isShowProperty: true
+      statuses: ["ongoing", "complete", "overdue"],
+      isShowProperty: true,
+      showMarkdownEditor: false
     };
   },
   methods: {
@@ -120,6 +138,29 @@ export default {
 
 
 <style>
+.editor-enter-active {
+  transition: all 0.3s ease;
+}
+
+.editor-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.editor-enter, .editor-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+#container {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+}
+
+.md-chips.md-field {
+  margin-left: 10px;
+  margin-bottom: 20px;
+}
+
 .compiledtext {
   word-wrap: break-word;
   overflow: scroll;
@@ -135,6 +176,14 @@ code {
   padding: 20px 10px;
   color: #e5e1dc;
 }
+.v-icon .md-layout-item .material-icons .theme--light {
+  width: 24px;
+}
+.v-select{
+    margin: 0;
+    padding: 0;
+}
+
 </style>
 
 
@@ -169,7 +218,7 @@ code {
 <style lang="css" scoped>
 .pulse-on-error >>> .md-duplicated {
   animation-name: pulse;
-  animation-duration: 0.5s;
+  animation-duration: 5.5s;
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-timing-function: ease-in-out;
