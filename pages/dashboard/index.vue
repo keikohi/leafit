@@ -155,7 +155,6 @@ export default {
     }
   },
   computed: {
-
     nCompletePost(){
       let nComplete = 0;
        Object.keys(this.loadedPosts).forEach(key => {

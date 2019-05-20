@@ -62,7 +62,6 @@ export default {
         { icon: 'folder', text: 'My Projects', route: '/projects' },
         { icon: 'person', text: 'Team', route: '/team'}
       ]
-
     }
   },
   components:{

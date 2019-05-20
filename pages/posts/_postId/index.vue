@@ -12,9 +12,6 @@
 </template>
 
 
-
-
-
 <script>
 import marked from "marked";
 import _ from "lodash";

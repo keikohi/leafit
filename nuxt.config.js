@@ -1,6 +1,8 @@
 const pkg = require('./package')
 const bodyParser = require('body-parser')
+require('dotenv').config()
 module.exports = {
+  mode: 'universal',
   /*
   ** Headers of the page
   */
@@ -20,11 +22,12 @@ module.exports = {
   plugins: [
     '~/plugins/vuetify.js',
     '~/plugins/vue-material.js',
+    '~/plugins/firebase.js',
     { src: '~plugins/mavon-editor', ssr: false }
   ],
   css: [
-     '~/assets/style/app.styl',
-     { src: '~/node_modules/highlight.js/styles/railscasts.css', lang: 'css' }
+    '~/assets/style/app.styl',
+    { src: '~/node_modules/highlight.js/styles/railscasts.css', lang: 'css' }
   ],
   /*
   ** Customize the progress bar color
@@ -47,9 +50,15 @@ module.exports = {
       // }
     }
   },
+
+  serverMiddleware: [
+    bodyParser.json(),
+    '~/api'
+  ],
   modules: [
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
+    '@nuxtjs/dotenv',
   ],
   axios: {
     baseURL: process.env.BASE_URL || 'https://leaf-it.firebaseio.com',
@@ -57,6 +66,13 @@ module.exports = {
   },
   env: {
     baseUrl: process.env.BASE_URL || 'https://leaf-it.firebaseio.com',
-    fbAPIKey: 'AIzaSyDOsnIWgXthFdwNBmjJBY2zzblwY7iJupc'
+    fbAPIKey: 'AIzaSyDOsnIWgXthFdwNBmjJBY2zzblwY7iJupc',
+    APIKEY: process.env.APIKEY,
+    AUTHDOMAIN: process.env.AUTHDOMAIN,
+    DATABASEURL: process.env.DATABASEURL,
+    PROJECTID: process.env.PROJECTID,
+    STORAGEBUCKET: process.env.STORAGEBUCKET,
+    MESSAGINGSENDERID: process.env.MESSAGINGSENDERID
   },
+
 }
