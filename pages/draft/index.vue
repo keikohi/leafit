@@ -1,38 +1,46 @@
 <template>
   <div class="draft">
-    <v-container class="mb-5 mt-2" >
-      <v-card>
-        <v-card-title class="pb-0">
-          <span>
-            <v-icon>edit</v-icon>
-          </span>
-          <h3>とりあえずのめも...</h3>
-        </v-card-title>
-        <v-card-text class="py-1">
-          <v-form class="px-3 my-1" ref="form">
-            <v-text-field class="py-0" label="title" v-model="post.title" prepend-icon="folder"></v-text-field>
-            <v-text-field class="py-0" label="tag" v-model="post.tags" prepend-icon="tag"></v-text-field>
-            <v-layout row>
-              <v-flex xs12 sm6>
-                <StatusRadio @input="v => post.status=v"/>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <!-- カレンダーの表示 -->
-                <Calender @input="v => post.due=v"/>
-              </v-flex>
-            </v-layout>
-            <v-btn
-              block
-              color="secondary"
-              dark
-              @click="isShowMarkdownEditor =!isShowMarkdownEditor"
-            >テキストも書く</v-btn>
-          </v-form>
-        </v-card-text>
-        <v-btn @click="postDraft" absolute dark fab top right color=orange>
-          <v-icon>done</v-icon>
-        </v-btn>
-      </v-card>
+    <v-container class="mb-5 mt-2">
+      <v-layout row class="project pt-2">
+        <v-flex xs0 sm2 md2></v-flex>
+        <!-- 余白のためのflex -->
+        <v-flex xs12 sm8 md8>
+          <v-card>
+            <v-card-title class="px-3 my-1">
+              <span>
+                <v-icon>edit</v-icon>
+              </span>
+              <div class="headline">めも..</div>
+            </v-card-title>
+            <v-card-text class="py-1">
+              <v-form class="px-3 my-1" ref="form">
+                <v-text-field class="py-0 title" label="title" v-model="post.title" prepend-icon="folder"></v-text-field>
+                <v-text-field class="py-0 title" label="tag" v-model="post.tags" prepend-icon="tag"></v-text-field>
+                <v-layout row>
+                  <v-flex xs12 sm6>
+                    <StatusRadio @input="v => post.status=v"/>
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <!-- カレンダーの表示 -->
+                    <Calender @input="v => post.due=v" v-if="post.status.id === 1"/>
+                  </v-flex>
+                </v-layout>
+                <v-btn
+                  block
+                  color="secondary"
+                  dark
+                  @click="isShowMarkdownEditor =!isShowMarkdownEditor"
+                >テキストも書く</v-btn>
+              </v-form>
+            </v-card-text>
+            <v-btn @click="postDraft" absolute dark fab top right color="orange">
+              <v-icon>done</v-icon>
+            </v-btn>
+          </v-card>
+        </v-flex>
+        <v-flex xs sm2 md2></v-flex>
+        <!-- 余白のためのflex -->
+      </v-layout>
     </v-container>
 
     <transition name="editor">
@@ -61,7 +69,11 @@ export default {
       post: {
         title: "",
         tags: [],
-        status: "",
+        status: {
+          id: 1,
+          status: "とりあえず残す",
+          color: "orange"
+        },
         due: "",
         markdownText: "# kkeisuke"
       },
@@ -86,24 +98,7 @@ export default {
 };
 </script>
 
-
 <style>
-#container {
-  display: grid;
-  grid-template-columns: 24px 1fr;
-}
 
-.md-chips.md-field {
-  margin-left: 10px;
-  margin-bottom: 20px;
-}
-
-.v-icon .md-layout-item .material-icons .theme--light {
-  width: 24px;
-}
-.v-select {
-  margin: 0;
-  padding: 0;
-}
 </style>
 

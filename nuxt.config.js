@@ -11,13 +11,20 @@ module.exports = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Nuxt.js + Vuetify.js project' }
+      {
+        hid: 'description',
+        name: 'description',
+        content: 'Nuxt.js + Vuetify.js project'
+      }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
-    ],
-
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+      }
+    ]
   },
   plugins: [
     '~/plugins/vuetify.js',
@@ -51,14 +58,12 @@ module.exports = {
     }
   },
 
-  serverMiddleware: [
-    bodyParser.json(),
-    '~/api'
-  ],
+  serverMiddleware: [bodyParser.json(), '~/api'],
   modules: [
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
     '@nuxtjs/dotenv',
+    'nuxt-material-design-icons'
   ],
   axios: {
     baseURL: process.env.BASE_URL || 'https://leaf-it.firebaseio.com',
@@ -73,6 +78,5 @@ module.exports = {
     PROJECTID: process.env.PROJECTID,
     STORAGEBUCKET: process.env.STORAGEBUCKET,
     MESSAGINGSENDERID: process.env.MESSAGINGSENDERID
-  },
-
+  }
 }

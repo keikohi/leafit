@@ -7,7 +7,9 @@
       label="マイルストーン"
       prepend-icon="date_range"
     ></v-text-field>
-    <v-date-picker v-model="due" @click="pick"></v-date-picker>
+    <div @click="pick">
+      <v-date-picker v-model="due"></v-date-picker>
+    </div>
   </v-menu>
 </template>
 
@@ -23,7 +25,8 @@ export default {
   },
   methods: {
     pick() {
-      this.$event("input", this.due);
+      this.$emit("input", this.due);
+      this.deu = "";
     }
   },
   computed: {

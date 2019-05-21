@@ -17,15 +17,21 @@ export default {
     return {
       statuses: {
         ongoing: {
+          id: 1,
           status: "とりあえず残す",
           color: "orange"
         },
         complete: {
+          id: 2,
           status: "Complete",
           color: "#3cd1c2"
         }
       },
-      selectedStatus: ""
+      selectedStatus: {
+        id: 1,
+        status: "とりあえず残す",
+        color: "orange"
+      }
     };
   },
   methods: {
