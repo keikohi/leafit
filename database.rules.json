@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "users": {
+      "$userId": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "kei": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

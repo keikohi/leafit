@@ -2,10 +2,11 @@
   <div class="single-post-page">
     <v-container>
       <v-card height="324px" flat>
-        <v-card-title class="display-1">{{loadedPost.title}}</v-card-title>
-        <v-chip disabled label small text-color="black" class="ml-2 font-weight-thin " v-for=" tag in tags " :key="tag"><v-icon left>label</v-icon>{{tag}}</v-chip>
+        <v-card-title class="display-1"></v-card-title>
+        <v-chip disabled label small text-color="black" class="ml-2 font-weight-thin">
+          <v-icon left>label</v-icon>
+        </v-chip>
         <v-card-text class="compiledtext" v-html="compiledMarkdown"></v-card-text>
-
       </v-card>
     </v-container>
   </div>

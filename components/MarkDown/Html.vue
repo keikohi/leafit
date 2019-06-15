@@ -2,9 +2,6 @@
   <div>
     <v-layout row class="markdown pt-2">
       <v-flex>
-        <v-textarea box label="MarkDown Text" class="textArea" no-resize v-model="value"></v-textarea>
-      </v-flex>
-      <v-flex>
         <v-card flat class="cardCompiledText">
           <v-card-text class="compiledtext" v-html="compiledMarkdown"></v-card-text>
         </v-card>
@@ -12,6 +9,7 @@
     </v-layout>
   </div>
 </template>
+
 
 <script>
 import marked from "marked";
@@ -21,26 +19,16 @@ export default {
   props: {
     value: String
   },
-  methods: {
-    // 変化を検知してemitを発生させる
-    // @change="commitChange"
-    // commitChange(newValue) {
-    //   this.$emit("input", newValue);
-    // },
-  },
-  // 一定時間ごとにMarkDownの内容をUpaDate
-  mounted() {
-    setInterval(() => {
-      this.$emit("input", this.value);
-    }, 2000);
+  data() {
+    return {
+      markdownText: ""
+    };
   },
   computed: {
     compiledMarkdown() {
-      // return marked(this.value, { sanitixe: true });
-      return marked(this.value === undefined ? "" : this.value, { sanitixe: true });
-    },
-    markdownText() {
-      return this.value;
+      if (this.value == undefined) return "";
+      return marked(this.value, { sanitixe: true });
+      //   return "";
     }
   },
   created() {

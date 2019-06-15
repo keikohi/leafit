@@ -2,7 +2,7 @@ const pkg = require('./package')
 const bodyParser = require('body-parser')
 require('dotenv').config()
 module.exports = {
-  mode: 'universal',
+  mode: 'spa',
   /*
   ** Headers of the page
   */
@@ -30,6 +30,7 @@ module.exports = {
     '~/plugins/vuetify.js',
     '~/plugins/vue-material.js',
     '~/plugins/firebase.js',
+    '~/plugins/veeValidate.js',
     { src: '~plugins/mavon-editor', ssr: false }
   ],
   css: [
@@ -58,7 +59,7 @@ module.exports = {
     }
   },
 
-  serverMiddleware: [bodyParser.json(), '~/api'],
+  // serverMiddleware: [bodyParser.json(), '~/api'],
   modules: [
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
