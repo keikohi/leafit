@@ -132,7 +132,8 @@ export default {
           status: "overdue",
           content: "I live Rin chan"
         }
-      ]
+      ],
+      loadedPosts: this.projects
     };
   },
   asyncData(context) {
@@ -166,7 +167,7 @@ export default {
     },
     completeRate(){
       let numPosts = Object.keys(this.loadedPosts).length;
-      return (this.nCompletePost / numPosts)*100;
+      // return (this.nCompletePost / numPosts)*100;
     },
     completeFraction(){
       return this.nCompletePost + '/' + Object.keys(this.loadedPosts).length;

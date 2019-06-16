@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     formattedDate() {
-      return this.due ? format(this.due, "MM/DD/YYYY") : "";
+      return this.due ? format(this.due, "YYYY-MM-DD") : "";
     }
   }
 };

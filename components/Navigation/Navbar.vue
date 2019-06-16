@@ -96,8 +96,6 @@ export default {
       tmpInputListName: "",
       links: [
         { icon: "dashboard", text: "Dashbosrd", route: "/dashboard" },
-        { icon: "folder", text: "My Projects", route: "/projects" },
-        { icon: "person", text: "Team", route: "/team" }
       ],
       postLists: [],
       width: window.innerWidth,
@@ -243,7 +241,7 @@ export default {
 @media screen and (max-width: 770px) {
   /*　画面サイズがmax-widthまではここを読み込む　*/
   .v-content {
-    padding: 56px 0px 0px 35px !important;
+    padding: 30px 0px 0px 35px !important;
   }
   .v-toolbar__content {
     padding-left: 80px !important;
@@ -257,7 +255,7 @@ export default {
   padding: 0;
 }
 .overlay {
-  opacity: 0.46;
+  opacity: 0.25;
   background-color: #212121;
   position: fixed;
   top: 0;

@@ -1,46 +1,45 @@
 <template>
   <div class="dashboad">
-    <h1 class="pt-5 px-3 grey--text list-name">
-      <v-icon class="grey--text list-icon">list</v-icon>
-      {{listName}}
-      <!-- リスト名の編集モーダル -->
-      <v-dialog v-model="renameListDialog" width="500">
-        <v-btn class="delete-icon" slot="activator" small fab>
-          <v-icon>edit</v-icon>
-        </v-btn>
-        <v-card>
-          <v-card-title class="headline grey lighten-2" primary-title>Rename the List?</v-card-title>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-text-field v-model="newListName" class="title-edit" autofocus label="Title" flat></v-text-field>
-            <v-spacer></v-spacer>
-          </v-card-actions>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="grey" @click="renameListDialog = false">Cancel</v-btn>
-            <v-btn color="red" @click="renameList">Ok</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <!-- リスト名の削除モーダル -->
-      <v-dialog v-model="deleteListDialog" width="500">
-        <v-btn class="delete-icon" slot="activator" small fab>
-          <v-icon>delete</v-icon>
-        </v-btn>
-        <v-card>
-          <v-card-title class="headline grey lighten-2" primary-title>Delete this List?</v-card-title>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="grey" @click="deleteListDialog = false">Cancel</v-btn>
-            <v-btn color="red" @click="_deleteList">Ok</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </h1>
-
     <v-container class="my-2">
-      <v-layout row class="mb-3">
+      <h1 class="pt-5 pb-3 px-3 grey--text list-name">
+        <v-icon class="grey--text list-icon">list</v-icon>
+        {{listName}}
+        <!-- リスト名の編集モーダル -->
+        <v-dialog v-model="renameListDialog" width="500">
+          <v-btn class="delete-icon" slot="activator" small fab>
+            <v-icon>edit</v-icon>
+          </v-btn>
+          <v-card>
+            <v-card-title class="headline grey lighten-2" primary-title>Rename the List?</v-card-title>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-text-field v-model="newListName" class="title-edit" autofocus label="Title" flat></v-text-field>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="grey" @click="renameListDialog = false">Cancel</v-btn>
+              <v-btn color="red" @click="renameList">Ok</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- リスト名の削除モーダル -->
+        <v-dialog v-model="deleteListDialog" width="500">
+          <v-btn class="delete-icon" slot="activator" small fab>
+            <v-icon>delete</v-icon>
+          </v-btn>
+          <v-card>
+            <v-card-title class="headline grey lighten-2" primary-title>Delete this List?</v-card-title>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="grey" @click="deleteListDialog = false">Cancel</v-btn>
+              <v-btn color="red" @click="_deleteList">Ok</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </h1>
+      <v-layout row wrap class="mb-3">
         <!-- 投稿のタイトルでソート -->
         <!-- <v-tooltip top>
           <v-btn small flat color="grey" @click="sortBy('title')" slot="activator">
@@ -51,20 +50,34 @@
         </v-tooltip>-->
 
         <!-- 投稿の日時でソート -->
-        <!-- <v-tooltip top>
-          <v-btn small flat color="grey" @click="sortBy('due')" slot="activator">
-            <v-icon left small>person</v-icon>
-            <span class="caption text-lowercase">By Due Date</span>
-          </v-btn>
-          <span>Sort projects by due date</span>
-        </v-tooltip>-->
+        <v-flex xs6 sm3 md2>
+          <v-tooltip top>
+            <v-btn flat color="grey" @click="addMemo" slot="activator">
+              <v-icon left>add</v-icon>
+              <span class="text-lowercase">add</span>
+            </v-btn>
+          </v-tooltip>
+        </v-flex>
 
-        <v-tooltip top>
-          <v-btn flat color="grey" @click="addMemo" slot="activator">
-            <v-icon left>add</v-icon>
-            <span class="text-lowercase">add Memo</span>
-          </v-btn>
-        </v-tooltip>
+        <v-flex xs6 sm3 md2>
+          <v-tooltip top>
+            <v-btn flat color="grey" @click="filterOngoingPosts" slot="activator">
+              <v-icon left>alarm</v-icon>
+              <span class="text-lowercase">Ongoing</span>
+            </v-btn>
+          </v-tooltip>
+        </v-flex>
+
+        <v-flex xs6 sm3 md2>
+          <v-tooltip top>
+            <v-btn flat color="grey" @click="filterCompletePosts" slot="activator">
+              <v-icon left>done</v-icon>
+              <span class="text-lowercase">Complete</span>
+            </v-btn>
+          </v-tooltip>
+        </v-flex>
+        <v-flex xs6 sm3 md6></v-flex>
+
         <!-- <DeletePost/> -->
       </v-layout>
       <PostList :posts="posts" @input="v => posts=v"/>
@@ -88,11 +101,15 @@ export default {
   data() {
     return {
       posts: [],
+      notFilteredPosts: [],
       listName: null,
       newListName: null,
       dialog: false,
       renameListDialog: false,
-      deleteListDialog: false
+      deleteListDialog: false,
+      filteringCompletePosts: false,
+      filteringOngoingPosts: false,
+      filteringOverduePosts: false
     };
   },
   mounted() {
@@ -101,8 +118,33 @@ export default {
   },
   methods: {
     ...mapActions("draft", ["renameListName", "deleteList"]),
-    sortBy(prop) {
-      this.projects.sort((a, b) => (a[prop] < b[prop] ? -1 : 1));
+    sortByPostDate() {
+      this.posts.sort((a, b) => (a.date < b.date ? -1 : 1));
+    },
+    sortByDue() {
+      this.posts.sort((a, b) => (a.due < b.due ? -1 : 1));
+    },
+    filterCompletePosts() {
+      if (this.filteringCompletePosts) {
+        this.posts = this.notFilteredPosts;
+        this.filteringCompletePosts = false;
+        return;
+      }
+      this.posts = this.notFilteredPosts.filter(post => {
+        return post.status == "complete";
+      });
+      this.filteringCompletePosts = true;
+    },
+    filterOngoingPosts() {
+      if (this.filteringOngoingPosts) {
+        this.posts = this.notFilteredPosts;
+        this.filteringOngoingPosts = false;
+        return;
+      }
+      this.posts = this.notFilteredPosts.filter(post => {
+        return post.status == "ongoing" || post.status == "overdue";
+      });
+      this.filteringOngoingPosts = true;
     },
     addMemo() {
       //   if (this.posts.slice(-1)[0].title === null) return;
@@ -153,7 +195,7 @@ export default {
     },
     _deleteList() {
       this.deleteList({
-        listId: this.$nuxt.$route.params.listId,
+        listId: this.$nuxt.$route.params.listId
       })
         .then(() => {
           this.listName = this.newListName;
@@ -194,6 +236,10 @@ export default {
             this.posts.push(post);
             console.log(data);
           });
+        })
+        .then(() => {
+          this.sortByDue();
+          this.notFilteredPosts = this.posts;
         })
         .catch(error => {
           console.log(error);

@@ -60,7 +60,7 @@
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn color="grey" @click="dialog = false">Cancel</v-btn>
-                  <v-btn color="red" @click="setDeletePost()">Delete</v-btn>
+                  <v-btn color="red" @click="setDeletePost">Delete</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
