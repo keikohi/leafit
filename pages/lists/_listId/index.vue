@@ -3,6 +3,7 @@
     <h1 class="pt-5 px-3 grey--text list-name">
       <v-icon class="grey--text list-icon">list</v-icon>
       {{listName}}
+      <!-- リスト名の編集モーダル -->
       <v-dialog v-model="renameListDialog" width="500">
         <v-btn class="delete-icon" slot="activator" small fab>
           <v-icon>edit</v-icon>
@@ -18,6 +19,21 @@
             <v-spacer></v-spacer>
             <v-btn color="grey" @click="renameListDialog = false">Cancel</v-btn>
             <v-btn color="red" @click="renameList">Ok</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- リスト名の削除モーダル -->
+      <v-dialog v-model="deleteListDialog" width="500">
+        <v-btn class="delete-icon" slot="activator" small fab>
+          <v-icon>delete</v-icon>
+        </v-btn>
+        <v-card>
+          <v-card-title class="headline grey lighten-2" primary-title>Delete this List?</v-card-title>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="grey" @click="deleteListDialog = false">Cancel</v-btn>
+            <v-btn color="red" @click="_deleteList">Ok</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -75,7 +91,8 @@ export default {
       listName: null,
       newListName: null,
       dialog: false,
-      renameListDialog: false
+      renameListDialog: false,
+      deleteListDialog: false
     };
   },
   mounted() {
@@ -83,7 +100,7 @@ export default {
     this.getListName();
   },
   methods: {
-    ...mapActions("draft", ["renameListName"]),
+    ...mapActions("draft", ["renameListName", "deleteList"]),
     sortBy(prop) {
       this.projects.sort((a, b) => (a[prop] < b[prop] ? -1 : 1));
     },
@@ -96,9 +113,8 @@ export default {
         status: "ongoing",
         content: null,
         visiblity: true,
-        fromDB:  false
+        fromDB: false
       };
-
       this.posts.push(emptyPost);
     },
     getListName() {
@@ -123,12 +139,8 @@ export default {
         });
     },
     renameList() {
-      const listId = this.$nuxt.$route.params.listId;
-      console.log(this.newListName);
-      console.log(listId);
-
       this.renameListName({
-        listId: listId,
+        listId: this.$nuxt.$route.params.listId,
         listNewName: this.newListName
       })
         .then(() => {
@@ -137,6 +149,20 @@ export default {
         })
         .catch(() => {
           console.log("Failed to rename the list");
+        });
+    },
+    _deleteList() {
+      this.deleteList({
+        listId: this.$nuxt.$route.params.listId,
+      })
+        .then(() => {
+          this.listName = this.newListName;
+          this.deleteListDialog = false;
+          console.log("Success to delete the list");
+          this.$router.push("/");
+        })
+        .catch(() => {
+          console.log("Failed to delete the list");
         });
     },
     getPosts() {

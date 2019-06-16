@@ -49,21 +49,33 @@
         <!-- DBから取得してきたリスト一覧 -->
         <v-list-tile>
           <v-list-tile-action>
-            <v-btn icon @click="inputText">
-              <i class="material-icons white--text bold">add</i>
-            </v-btn>
+            <!-- <Popup @input="title => tmpInputListName=title"/> -->
+            <v-dialog v-model="createListDialog" max-width="600px">
+              <v-btn icon small slot="activator" color="white">
+                <i class="material-icons black--text bold">add</i>
+              </v-btn>
+              <v-card>
+                <v-card-title>
+                  <h2>Add a New List</h2>
+                </v-card-title>
+                <v-card-text>
+                  <v-form class="px-3" ref="form">
+                    <v-text-field
+                      label="Title"
+                      v-model="tmpInputListName"
+                      prepend-icon="folder"
+                      :rules="inputRules"
+                    ></v-text-field>
+                    <v-spacer></v-spacer>
+                    <v-btn dark class="dark ma-3" color="grey" @click="createListDialog = false">Cancel</v-btn>
+                    <v-btn dark class="dark ma-3" color="orange" @click="saveListName">OK</v-btn>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
           </v-list-tile-action>
-          <v-list-tile-content v-if="!isTextingList">
+          <v-list-tile-content>
             <v-list-tile class="white--text" single-line="true">New List</v-list-tile>
-          </v-list-tile-content>
-          <v-list-tile-content v-if="isTextingList">
-            <v-text-field
-              placeholder=" New List"
-              background-color="white"
-              class="body-2 ma-1"
-              @keypress.enter="saveListName"
-              v-model="tmpInputListName"
-            ></v-text-field>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -92,7 +104,12 @@ export default {
       height: window.innerHeight,
       isTemporary: false,
       isShowOverlay: true,
-      listError: false
+      listError: false,
+      createListDialog: false,
+      inputRules: [
+        v => v.length <= 16 || "maximum length is 16 characters",
+        v => v != "" || "Minimum length is 1 characters"
+      ]
     };
   },
   mounted() {
@@ -118,32 +135,31 @@ export default {
       this.isTextingList = !this.isTextingList;
     },
     // 非同期処理を待つ await を中で呼ぶ関数はasyncをつけなくてはならない
-    async saveListName() {
-      const trimedListName = this.tmpInputListName.trim();
-      if (trimedListName === "") {
-        return;
+    saveListName() {
+      if (this.$refs.form.validate()) {
+        const trimedListName = this.tmpInputListName.trim();
+        this.createPostList({
+          listName: trimedListName,
+          uid: "name"
+          // TODO: uidを以下に直す
+          // uid: this.$store.getters["user/getUid"]
+        })
+          .then(postId => {
+            let list = {
+              icon: "list",
+              text: trimedListName,
+              route: "/lists/" + postId
+            };
+            this.links.push(list);
+            this.tmpInputListName = "";
+            this.isTextingList = false;
+            // ダイアログの非表示
+            this.createListDialog = false;
+          })
+          .catch(error => console.log("Failed to save a list name"));
       }
-      if (trimedListName.length >= 16) {
-        this.listError = true;
-        return;
-      }
-
-      let postId = await this.createPostList({
-        listName: trimedListName,
-        uid: "name"
-        // TODO: uidを以下に直す
-        // uid: this.$store.getters["user/getUid"]
-      });
-
-      let list = {
-        icon: "list",
-        text: trimedListName,
-        route: "/lists/" + postId
-      };
-      this.links.push(list);
-      this.tmpInputListName = "";
-      this.isTextingList = false;
     },
+    createNewList() {},
     getListName() {
       console.log("userId:" + this.$store.getters["user/getUid"]);
       firebase

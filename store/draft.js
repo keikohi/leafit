@@ -128,6 +128,23 @@ export const actions = {
         })
     })
   },
+  deleteList({ store }, { listId}) {
+    return new Promise((resolve, reject) => {
+      firebase
+        .firestore()
+        .collection('user_post_list')
+        .doc('name')
+        .collection('post_list')
+        .doc(listId)
+        .delete()
+        .then(() => {
+          resolve()
+        })
+        .catch(error => {
+          reject()
+        })
+    })
+  },
   updateStatus({ store }, { postToUpdate, listId, postId }) {
     return new Promise((resolve, reject) => {
       firebase
