@@ -37,9 +37,6 @@
             <v-list-tile class="white--text" single-line="true">{{ link.text }}</v-list-tile>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile>
-          <Popup/>
-        </v-list-tile>
         <!-- 作成したリストの表示 -->
         <v-list-tile v-for="list in postLists" :key="list.text" router :to="list.route">
           <v-list-tile-action id="icon">

@@ -2,7 +2,7 @@
 <template>
   <div>
     <!-- :to="post.postRoute" -->
-    <v-card flat ref="post" v-for="(post,index) in posts" :key="index">
+    <v-card flat ref="post" v-for="post in posts" :key="post.postId">
       <v-layout row wrap :class="`project pb-0 pt-2 px-3 ${post.status}`">
         <v-flex xs12 sm6 md6 @click="toMarkdownPage(post)">
           <!-- 編集中は表示post.visiblityがtrue -->
@@ -18,7 +18,7 @@
             <div>{{ post.due }}</div>
           </div>
           <div class="mt-o0 right" v-if="post.visiblity">
-            <Calender @input="v => post.due=v"/>
+            <Calender :_due="post.due" @input="v => post.due=v"/>
             <!-- <p class="due-validate" v-show="errors.has('due-validate')">{{ post.due }}</p> -->
           </div>
         </v-flex>
@@ -27,7 +27,7 @@
           <div class="mt-3 mb-2" v-if="!post.visiblity">
             <v-chip
               small
-              @click="completeStatus(post)"
+              @click="changeStatus(post)"
               :class="`${post.status} white--text titile status-chip`"
             >{{ post.status }}</v-chip>
           </div>
@@ -40,19 +40,27 @@
             <v-btn class="edit-icon" v-if="!post.visiblity" @click="editPost(post)" small fab>
               <v-icon>edit</v-icon>
             </v-btn>
-            <!-- <v-btn class="delete-icon" v-if="!post.visiblity" @click="editPost(post)" small fab>
-              <v-icon>delete</v-icon>
-            </v-btn>-->
             <v-dialog v-model="dialog" width="500">
-              <v-btn class="delete-icon" v-if="!post.visiblity" slot="activator" small fab>
+              <v-btn
+                class="delete-icon"
+                v-if="!post.visiblity"
+                slot="activator"
+                small
+                fab
+                @click="selectPostToDelete(post)"
+              >
                 <v-icon>delete</v-icon>
               </v-btn>
               <v-card>
-                <v-card-title class="headline grey lighten-2" primary-title>Delete This Post?</v-card-title>
+                <v-card-title
+                  class="headline grey lighten-2"
+                  primary-title
+                >Delete This Post? {{postToDelete.title}}</v-card-title>
                 <v-divider></v-divider>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="red" @click="setDeletePost(post, index)">I accept</v-btn>
+                  <v-btn color="grey" @click="dialog = false">Cancel</v-btn>
+                  <v-btn color="red" @click="setDeletePost()">Delete</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -87,36 +95,44 @@ export default {
         date: null
       },
       tmp: "",
-      dialog: false
+      dialog: false,
+      deletePostId: null,
+      postToDelete: {
+        title: ""
+      }
     };
   },
   methods: {
     // mapActionsはmethodsで定義
-    ...mapActions("draft", ["createPost", "deletePost"]),
-    initInput() {
-      this.input.title = null;
-      // due: 〆切
-      this.input.due = null;
-      // date: 投稿日時
-      this.input.date = null;
-    },
+    ...mapActions("draft", [
+      "createPost",
+      "deletePost",
+      "updateStatus",
+      "updatePost"
+    ]),
     setTitle(post) {
+      // postが未入力ならば起票不可
       if (post.title === null) {
         return;
       }
       post.visiblity = false;
-      post.status = "ongoing";
-
-      const date = format(Date.now(), "YYYY/MM/DD HH:mm:ss");
-      post.date = date;
-
-      // postListのidを格納
+      post.date = format(Date.now(), "YYYY/MM/DD HH:mm:ss");
       post.postListid = this.$nuxt.$route.params.listId;
+
+      //すでに存在するPostはDB更新
+      if (post.fromDB) {
+        this.updatePost({
+          draft: post
+        });
+        return;
+      }
       this.createPost({
         draft: post,
         uid: "name"
+      }).then(id => {
+        // 戻り値のPostIdを回収してメモ画面へのURLを追加
+        post.postRoute = this.$nuxt.$route.params.listId + "/" + id;
       });
-      this.initInput();
     },
     editPost(post) {
       post.visiblity = true;
@@ -127,25 +143,41 @@ export default {
       }
       this.$router.push("/lists/" + post.postRoute);
     },
-    completeStatus(post) {
-      console.log(post.status);
-      if (post.status == "ongoing") {
-        post.status = "complete";
-        return;
-      }
-      console.log(post.status);
-      post.status = "ongoing";
-    },
-
-    setDeletePost(post, index) {
-      this.deletePost({
-        postToDelete: post
+    changeStatus(post) {
+      post.status = post.status == "ongoing" ? "complete" : "ongoing";
+      const listPostId = post.postRoute.split("/");
+      this.updateStatus({
+        postToUpdate: post,
+        listId: listPostId[0],
+        postId: listPostId[1]
       })
         .then(() => {
-          this.posts.splice(index, 1);
-          this.dialog = false;          
+          console.log("Success to change status: " + post.status);
+        })
+        .catch(error => {
+          console.log("Failded to update Status");
+          post.status = post.status == "ongoing" ? "complete" : "ongoing";
+        });
+    },
+
+    setDeletePost() {
+      this.deletePost({
+        postToDelete: this.postToDelete
+      })
+        .then(() => {
+          console.log("post: " + this.postToDelete.postId);
+          this.posts = this.posts.filter(post_in_posts => {
+            return post_in_posts.postId != this.postToDelete.postId;
+          });
+          this.dialog = false;
+          // 削除した結果を親コンポーネントに渡す
+          this.$emit("input", this.posts);
         })
         .catch(error => console.log("Could not delete a post"));
+    },
+    // Modal内でpostを選択すると選択できないので、Model表示ボタンでで削除対象をセット
+    selectPostToDelete(post) {
+      this.postToDelete = post;
     }
   }
 };

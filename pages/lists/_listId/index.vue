@@ -51,7 +51,7 @@
         </v-tooltip>
         <!-- <DeletePost/> -->
       </v-layout>
-      <PostList :posts="posts"/>
+      <PostList :posts="posts" @input="v => posts=v"/>
     </v-container>
   </div>
 </template>
@@ -92,10 +92,11 @@ export default {
       let emptyPost = {
         title: null,
         person: null,
-        due: null,
-        status: null,
+        due: "",
+        status: "ongoing",
         content: null,
-        visiblity: true
+        visiblity: true,
+        fromDB:  false
       };
 
       this.posts.push(emptyPost);
@@ -157,10 +158,12 @@ export default {
             const post = {
               title: data.title,
               due: data.due,
-              status: "ongoing",
+              status: data.status,
               visiblity: false,
+              postId: doc.id,
               postRoute: listId + "/" + doc.id,
-              markdownText: "# keisuke"
+              markdownText: "",
+              fromDB: true
             };
             this.posts.push(post);
             console.log(data);

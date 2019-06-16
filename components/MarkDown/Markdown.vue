@@ -33,6 +33,7 @@ export default {
     setInterval(() => {
       this.$emit("input", this.value);
     }, 2000);
+    console.log("value: "+this.value)
   },
   computed: {
     compiledMarkdown() {

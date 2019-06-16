@@ -46,24 +46,46 @@ export const actions = {
     })
   },
   createPost({ store }, { draft, uid }) {
-    //TODO: nameをuidに置き換える
-    uid = 'name'
-    console.log('draft: ' + draft.title + draft.due)
-    console.log('uid: ' + uid)
-    firebase
-      .firestore()
-      .collection('user_post')
-      .doc(uid)
-      .collection('post_list')
-      .doc(draft.postListid)
-      .collection('post')
-      .add({
-        title: draft.title,
-        due: draft.due,
-        date: draft.date
-      })
-      .then(ref => ref.id)
-      .catch(error => console.log(error))
+    return new Promise((resolve, reject) => {
+      //TODO: nameをuidに置き換える
+      uid = 'name'
+      console.log('draft: ' + draft.title + draft.due)
+      console.log('uid: ' + uid)
+      firebase
+        .firestore()
+        .collection('user_post')
+        .doc(uid)
+        .collection('post_list')
+        .doc(draft.postListid)
+        .collection('post')
+        .add({
+          title: draft.title,
+          due: draft.due,
+          date: draft.date,
+          status: 'ongoing'
+        })
+        .then(ref => resolve(ref.id))
+        .catch(error => console.log(error))
+    })
+  },
+  updatePost({ store }, { draft }) {
+    return new Promise((resolve, reject) => {
+      firebase
+        .firestore()
+        .collection('user_post')
+        .doc('name')
+        .collection('post_list')
+        .doc(draft.postListid)
+        .collection('post')
+        .doc(draft.postId)
+        .update({
+          title: draft.title,
+          due: draft.due,
+          date: draft.date
+        })
+        .then(() => resolve())
+        .catch(error => console.log(error))
+    })
   },
   deletePost({ store }, { postToDelete }) {
     return new Promise((resolve, reject) => {
@@ -103,6 +125,27 @@ export const actions = {
         })
         .catch(error => {
           reject()
+        })
+    })
+  },
+  updateStatus({ store }, { postToUpdate, listId, postId }) {
+    return new Promise((resolve, reject) => {
+      firebase
+        .firestore()
+        .collection('user_post')
+        .doc('name')
+        .collection('post_list')
+        .doc(listId)
+        .collection('post')
+        .doc(postId)
+        .update({
+          status: postToUpdate.status
+        })
+        .then(() => {
+          resolve()
+        })
+        .catch(error => {
+          console.error('Error removing document: ', error)
         })
     })
   }

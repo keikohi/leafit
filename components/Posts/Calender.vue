@@ -24,8 +24,14 @@ import highlight from "highlight.js";
 export default {
   data() {
     return {
-      due: ""
+      due: this._due
     };
+  },
+  props: {
+    _due: {
+      type: String,
+      required: true
+    }
   },
   methods: {
     pick() {
