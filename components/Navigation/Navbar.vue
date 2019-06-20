@@ -8,7 +8,7 @@
     </v-toolbar>
     <!-- drawerがtemporaryで大きくなるときはoverlayを表示 -->
     <!-- overlayをクリックしたときもdrawerが閉じるように変更 -->
-    <div class="overlay" @click="mini=!mini" v-if="isTemporary*!mini"></div>
+    <div class="overlay" @click="minimizeDrawer" v-if="isTemporary*!mini"></div>
     <!-- stateless: これがないと、drawserを閉じたときに画面からdrawserが消失 -->
     <v-navigation-drawer
       app
@@ -17,13 +17,14 @@
       :mini-variant.sync="mini"
       stateless
       hide-overlay
-      class="grey"
+      :class="`${this.drawerState} grey drawer`"
+      v-on:swipeleft="swipe"
     >
       <v-list>
         <!-- メニューのアイコン表示 -->
         <v-list-tile>
           <v-list-tile-action>
-            <v-btn icon @click.stop="mini = !mini">
+            <v-btn icon @click.stop="minimizeDrawer">
               <v-icon class="white--text bold">menu</v-icon>
             </v-btn>
           </v-list-tile-action>
@@ -67,7 +68,12 @@
                       :rules="inputRules"
                     ></v-text-field>
                     <v-spacer></v-spacer>
-                    <v-btn dark class="dark ma-3" color="grey" @click="createListDialog = false">Cancel</v-btn>
+                    <v-btn
+                      dark
+                      class="dark ma-3"
+                      color="grey"
+                      @click="createListDialog = false"
+                    >Cancel</v-btn>
                     <v-btn dark class="dark ma-3" color="orange" @click="saveListName">OK</v-btn>
                   </v-form>
                 </v-card-text>
@@ -92,11 +98,10 @@ export default {
     return {
       drawerVisiblity: true,
       mini: true,
+      drawerState: "min",
       isTextingList: false,
       tmpInputListName: "",
-      links: [
-        { icon: "dashboard", text: "Dashbosrd", route: "/dashboard" },
-      ],
+      links: [{ icon: "dashboard", text: "Dashbosrd", route: "/" }],
       postLists: [],
       width: window.innerWidth,
       height: window.innerHeight,
@@ -131,6 +136,18 @@ export default {
     },
     inputText() {
       this.isTextingList = !this.isTextingList;
+    },
+    minimizeDrawer() {
+      this.mini = !this.mini;
+      var drawerList = document.getElementsByClassName("drawer");
+      const style = drawerList[0];
+      if (this.mini) {
+        this.drawerState = "mini";
+        console.log(this.drawerState);
+        return;
+      }
+      this.drawerState = "expand";
+      console.log(this.drawerState);
     },
     // 非同期処理を待つ await を中で呼ぶ関数はasyncをつけなくてはならない
     saveListName() {
@@ -187,6 +204,9 @@ export default {
       this.isShowOverlay = !this.isShowOverlay;
       console.log("clicked!!!");
     },
+    swipe() {
+      console.log("swiped");
+    },
     handleResize() {
       this.width = window.innerWidth;
       this.height = window.innerHeight;
@@ -221,9 +241,19 @@ export default {
   width: 200px !important;
 }
 
-.v-navigation-drawer--mini-variant {
+.drawer {
+  /* mobileでswipeしても大丈夫なように */
+  transform: translateX(0) !important;
+}
+.v-navigation-drawer--mini-variant{
+  width: 48px !important;
+}
+.mini {
   /* !importantはスタイルの優先順位を無視して最優先適用 */
   width: 48px !important;
+}
+.expand {
+  width: 200px !important;
 }
 .v-list__tile__action {
   min-width: initial;
@@ -245,6 +275,10 @@ export default {
   }
   .v-toolbar__content {
     padding-left: 80px !important;
+  }
+  .drawer {
+    /* mobileでswipeしても大丈夫なように */
+    transform: translateX(0) !important;
   }
 }
 .v-navigation-drawer--temporary:not(.v-navigation-drawer--close),
@@ -273,6 +307,7 @@ aside {
   overflow-y: scroll !important;
   padding-right: 10px;
 }
+
 aside::-webkit-scrollbar {
   display: none;
 }

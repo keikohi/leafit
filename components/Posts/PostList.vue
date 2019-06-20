@@ -43,7 +43,7 @@
             <v-dialog v-model="dialog" width="500">
               <v-btn
                 class="delete-icon"
-                v-if="!post.visiblity"
+                v-show="!post.visiblity"
                 slot="activator"
                 small
                 fab
@@ -132,6 +132,9 @@ export default {
       }).then(id => {
         // 戻り値のPostIdを回収してメモ画面へのURLを追加
         post.postRoute = this.$nuxt.$route.params.listId + "/" + id;
+      }).catch(error => {
+        console.log("Failed to create post");
+        
       });
     },
     editPost(post) {

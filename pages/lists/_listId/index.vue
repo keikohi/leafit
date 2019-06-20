@@ -40,41 +40,26 @@
         </v-dialog>
       </h1>
       <v-layout row wrap class="mb-3">
-        <!-- 投稿のタイトルでソート -->
-        <!-- <v-tooltip top>
-          <v-btn small flat color="grey" @click="sortBy('title')" slot="activator">
-            <v-icon left small>folder</v-icon>
-            <span class="caption text-lowercase">By project name</span>
-          </v-btn>
-          <span>Sort projects by project name</span>
-        </v-tooltip>-->
 
-        <!-- 投稿の日時でソート -->
         <v-flex xs6 sm3 md2>
-          <v-tooltip top>
-            <v-btn flat color="grey" @click="addMemo" slot="activator">
+            <v-btn flat color="grey" @click="addMemo" >
               <v-icon left>add</v-icon>
               <span class="text-lowercase">add</span>
             </v-btn>
-          </v-tooltip>
         </v-flex>
 
         <v-flex xs6 sm3 md2>
-          <v-tooltip top>
-            <v-btn flat color="grey" @click="filterOngoingPosts" slot="activator">
+            <v-btn flat color="grey" @click="filterOngoingPosts">
               <v-icon left>alarm</v-icon>
               <span class="text-lowercase">Ongoing</span>
             </v-btn>
-          </v-tooltip>
         </v-flex>
 
         <v-flex xs6 sm3 md2>
-          <v-tooltip top>
-            <v-btn flat color="grey" @click="filterCompletePosts" slot="activator">
+            <v-btn flat color="grey" @click="filterCompletePosts">
               <v-icon left>done</v-icon>
               <span class="text-lowercase">Complete</span>
             </v-btn>
-          </v-tooltip>
         </v-flex>
         <v-flex xs6 sm3 md6></v-flex>
 

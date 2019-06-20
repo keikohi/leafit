@@ -8,6 +8,10 @@ interface Post {
     readonly date: string;
     readonly due: string;
     readonly status: string;
+    readonly markdownText: string;
+    readonly htmlText: string;
+    listId: string;
+    postId: string;
 }
 
 interface PostSummaryI {
@@ -19,33 +23,32 @@ interface PostSummaryI {
     postId: string;
 }
 
-class PostSummary implements PostSummaryI {
-    title: string;
-    date: string;
-    due: string;
-    status: string;
-    listId: string;
-    postId: string;
-    constructor(title: string, date: string, due: string, status: string, listId: string, postId: string) {
-        this.title = title;
-        this.date = date;
-        this.due = due;
-        this.status = status;
-        this.listId = listId;
-        this.postId = postId;
-    }
-}
-
 export const onUsersPostCreate = functions.firestore.document('/user_post/{userId}/post_list/{listId}/post/{postId}').onCreate(async (snapshot, context) => {
-    await copyToRootWithUsersPostSnapshot(snapshot, context);
+    await copyPostToAllPosts(snapshot, context);
 });
 
 export const onUsersPostUpdate = functions.firestore.document('/user_post/{userId}/post_list/{listId}/post/{postId}').onUpdate(async (change, context) => {
-    await copyToRootWithUsersPostSnapshot(change.after, context);
+    await copyPostToAllPosts(change.after, context);
 });
 
-async function copyToRootWithUsersPostSnapshot(snapshot: FirebaseFirestore.DocumentSnapshot, context: functions.EventContext) {
+export const onUsersPostDelete = functions.firestore.document('/user_post/{userId}/post_list/{listId}/post/{postId}').onDelete(async (snapshot, context) => {
+    await deletePostFromAllPosts(snapshot, context);
+});
+
+
+
+async function copyPostToAllPosts(snapshot: FirebaseFirestore.DocumentSnapshot, context: functions.EventContext) {
     const post = snapshot.data() as Post;
-    let postSummary = new PostSummary(post.title, post.date, post.due, post.status, context.params.listId, snapshot.id);
+    const postSummary: PostSummaryI = post;
+    postSummary.listId = context.params.listId;
+    postSummary.postId = snapshot.id;
     await firestore.collection('user_all_posts').doc("name").collection("all_posts").doc(postSummary.postId).set(postSummary, { merge: true });
+}
+
+
+async function deletePostFromAllPosts(snapshot: FirebaseFirestore.DocumentSnapshot, context: functions.EventContext) {
+    const post = snapshot.data() as Post;
+    const postSummary: PostSummaryI = post;
+    postSummary.postId = snapshot.id;
+    await firestore.collection('user_all_posts').doc("name").collection("all_posts").doc(postSummary.postId).delete();
 }

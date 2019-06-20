@@ -75,7 +75,9 @@ export const actions = {
         .collection('user_post')
         .doc('name')
         .collection('post_list')
-        .doc(draft.postListid)
+        // dashBoardからとlistのindex.vueからのルートで条件分岐
+        // dashBoardから　draft.postListidが存在
+        .doc(draft.postListid ? draft.postListid: draft.post)
         .collection('post')
         .doc(draft.postId)
         .update({
@@ -90,8 +92,19 @@ export const actions = {
   deletePost({ store }, { postToDelete }) {
     return new Promise((resolve, reject) => {
       // はじめの要素にリストID, ２つ目にポスト ID
-      console.log(postToDelete)
-      const listPostId = postToDelete.postRoute.split('/')
+      console.log("postToDelete"+postToDelete)
+
+      let listPostId = [];
+      if(postToDelete.postRoute){
+        listPostId= postToDelete.postRoute.split('/')
+      } else {
+        listPostId[0] = postToDelete.listId
+        listPostId[1] = postToDelete.postId 
+      }
+      console.log(listPostId[0]);
+      console.log(listPostId[1]);
+      
+      
       firebase
         .firestore()
         .collection('user_post')

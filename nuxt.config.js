@@ -31,6 +31,7 @@ module.exports = {
     '~/plugins/vue-material.js',
     '~/plugins/firebase.js',
     '~/plugins/veeValidate.js',
+    '~/plugins/vue-touch.js',
     { src: '~plugins/mavon-editor', ssr: false }
   ],
   css: [
