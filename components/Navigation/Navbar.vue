@@ -30,7 +30,7 @@
           </v-list-tile-action>
         </v-list-tile>
         <!-- メニューのアイコン表示 -->
-        <v-list-tile v-for="link in links" :key="link.text" router :to="link.route">
+        <v-list-tile v-for="link in links" :key="link.text"  router :to="link.route" >
           <v-list-tile-action>
             <v-icon class="white--text">{{ link.icon }}</v-icon>
           </v-list-tile-action>
@@ -39,7 +39,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <!-- 作成したリストの表示 -->
-        <v-list-tile v-for="list in postLists" :key="list.text" router :to="list.route">
+        <v-list-tile v-for="list in postLists" :key="list.text" router :to="list.route" @click="minimizeDrawer">
           <v-list-tile-action id="icon">
             <v-icon class="white--text">{{ list.icon }}</v-icon>
           </v-list-tile-action>
