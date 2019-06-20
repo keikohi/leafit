@@ -41,6 +41,8 @@
 <script>
 import firebase from "@/plugins/firebase";
 import PostList from "@/components/Posts/PostList";
+import format from "date-fns/format";
+import { log } from 'util';
 export default {
   components: {
     PostList
@@ -53,8 +55,11 @@ export default {
     };
   },
   methods: {
-    sortPostsByDue() {
-      this.posts.sort((a, b) => (a.due < b.due ? -1 : 1));
+    sortByStatusDue() {
+      this.posts.sort((a, b) => {
+        return a.status > b.status ? -1 : 1;
+        return a.due < b.due ? -1 : 1;
+      });
     },
     jumpPostPage(index) {
       this.$router.push({ name: `posts-postId`, params: { postId: index } });
@@ -63,6 +68,14 @@ export default {
       this.posts = this.allPosts.filter(post => {
         return post.status == "ongoing" || post.status == "overdue";
       });
+    },
+    checkDue(due){
+      const today = format(Date.now(), "YYYY-MM-DD");
+      if(!due)  return true
+      if(today > due){
+        return false
+      }
+      return true
     },
     getPosts() {
       firebase
@@ -80,7 +93,7 @@ export default {
               title: data.title,
               due: data.due,
               date: data.date,
-              status: data.status,
+              status: this.checkDue(data.due)? data.status: "overdue",
               postId: data.postId,
               listId: data.listId,
               postRoute: data.listId+'/'+data.postId,
@@ -91,7 +104,7 @@ export default {
         })
         .then(() => {
           this.filterOngoingPosts();
-          this.sortPostsByDue();
+          this.sortByStatusDue();
           this.completeRatio =
             (100 * (this.allPosts.length - this.posts.length)) /
             this.allPosts.length;

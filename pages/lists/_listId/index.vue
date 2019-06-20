@@ -40,26 +40,25 @@
         </v-dialog>
       </h1>
       <v-layout row wrap class="mb-3">
-
         <v-flex xs6 sm3 md2>
-            <v-btn flat color="grey" @click="addMemo" >
-              <v-icon left>add</v-icon>
-              <span class="text-lowercase">add</span>
-            </v-btn>
+          <v-btn flat color="grey" @click="addMemo">
+            <v-icon left>add</v-icon>
+            <span class="text-lowercase">add</span>
+          </v-btn>
         </v-flex>
 
         <v-flex xs6 sm3 md2>
-            <v-btn flat color="grey" @click="filterOngoingPosts">
-              <v-icon left>alarm</v-icon>
-              <span class="text-lowercase">Ongoing</span>
-            </v-btn>
+          <v-btn flat color="grey" @click="filterOngoingPosts">
+            <v-icon left>alarm</v-icon>
+            <span class="text-lowercase">Ongoing</span>
+          </v-btn>
         </v-flex>
 
         <v-flex xs6 sm3 md2>
-            <v-btn flat color="grey" @click="filterCompletePosts">
-              <v-icon left>done</v-icon>
-              <span class="text-lowercase">Complete</span>
-            </v-btn>
+          <v-btn flat color="grey" @click="filterCompletePosts">
+            <v-icon left>done</v-icon>
+            <span class="text-lowercase">Complete</span>
+          </v-btn>
         </v-flex>
         <v-flex xs6 sm3 md6></v-flex>
 
@@ -77,6 +76,7 @@ import PostList from "@/components/Posts/PostList";
 import DatePicker from "@/components/Posts/DatePicker";
 import { mapActions } from "vuex";
 import firebase from "@/plugins/firebase";
+import format from "date-fns/format";
 
 export default {
   components: {
@@ -106,8 +106,19 @@ export default {
     sortByPostDate() {
       this.posts.sort((a, b) => (a.date < b.date ? -1 : 1));
     },
-    sortByDue() {
-      this.posts.sort((a, b) => (a.due < b.due ? -1 : 1));
+    sortByStatusDue() {
+      this.posts.sort((a, b) => {
+        return a.status > b.status ? -1 : 1;
+        return a.due < b.due ? -1 : 1;
+      });
+    },
+    checkDue(due) {
+      const today = format(Date.now(), "YYYY-MM-DD");
+      if (!due) return true;
+      if (today > due) {
+        return false;
+      }
+      return true;
     },
     filterCompletePosts() {
       if (this.filteringCompletePosts) {
@@ -211,7 +222,7 @@ export default {
             const post = {
               title: data.title,
               due: data.due,
-              status: data.status,
+              status: this.checkDue(data.due) ? data.status : "overdue",
               visiblity: false,
               postId: doc.id,
               postRoute: listId + "/" + doc.id,
@@ -223,7 +234,7 @@ export default {
           });
         })
         .then(() => {
-          this.sortByDue();
+          this.sortByStatusDue();
           this.notFilteredPosts = this.posts;
         })
         .catch(error => {
