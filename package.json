@@ -22,7 +22,7 @@
     "highlight.js": "^9.14.2",
     "js-cookie": "^2.2.0",
     "lodash": "^4.17.11",
-    "marked": "^0.6.1",
+    "marked": "^0.7.0",
     "mavon-editor": "^2.6.17",
     "nuxt": "^2.2.0",
     "nuxt-material-design-icons": "^1.0.4",
